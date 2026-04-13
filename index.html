@@ -1,0 +1,1211 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lee Rin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&family=Space+Mono:wght@400;700&family=Major+Mono+Display&display=swap" rel="stylesheet">
+<style>
+  @font-face{
+    font-family:'Pixelogist';
+    src:url('fonts/Pixelogist_3D.ttf') format('truetype');
+    font-weight:normal;font-style:normal;
+  }
+  @font-face{
+    font-family:'Pixel';
+    src:url('fonts/Pixel-Regular.ttf') format('truetype');
+    font-weight:400;font-style:normal;
+  }
+  :root{
+    --bg:#ffffff;
+    --bg-2:#000000;
+    --chrome:#c0c0c0;
+    --chrome-dk:#808080;
+    --chrome-lt:#ffffff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;cursor:none!important}
+  html,body{background:var(--bg);color:#000;font-family:'VT323',monospace;font-size:20px;line-height:1.35;overflow-x:hidden;padding-top:0px;padding-bottom:36px}
+
+  a{color:#000;text-decoration:none;border-bottom:1px dashed #000}
+  a:hover{background:#000;color:#fff}
+  ::selection{background:#000;color:#fff}
+
+  /* ===== PIXEL CURSOR ===== */
+  @keyframes liquidPulse {
+    0%, 100% {
+      r: 7px;
+      filter: blur(0px) drop-shadow(0 0 4px rgba(0, 0, 0, 0.5));
+    }
+    50% {
+      r: 7.5px;
+      filter: blur(0.3px) drop-shadow(0 0 6px rgba(0, 0, 0, 0.7));
+    }
+  }
+  
+  #px-cursor{
+    position:fixed;pointer-events:none;z-index:99999;
+    left:0;top:0;display:block;
+    transform:translate(-50%, -50%);
+    animation: liquidPulse 2s ease-in-out infinite;
+    transition: transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.2s ease;
+  }
+  
+  #px-cursor svg circle {
+    transition: stroke 0.2s ease;
+  }
+
+  /* ===== CATALOG BAR ===== */
+  .catalog-bar{
+    position:fixed;top:0;left:0;right:0;height:38px;z-index:1000;
+    background:var(--chrome);
+    border-bottom:2px solid #000;
+    box-shadow:inset 0 1px 0 #fff;
+    display:flex;align-items:center;gap:0;
+    font-family:'VT323',monospace;font-size:18px;color:#000;
+  }
+  .home-btn{
+    width:38px;height:38px;display:flex;align-items:center;justify-content:center;
+    border-right:2px solid var(--chrome-dk);background:var(--chrome);
+    flex:none;border-bottom:none;
+    transition:background .1s;
+  }
+  .home-btn:hover{background:#000;color:#fff}
+  .home-btn svg{display:block;image-rendering:pixelated}
+  .catalog-link{
+    height:38px;padding:0 14px;display:flex;align-items:center;
+    border-right:1px solid var(--chrome-dk);
+    letter-spacing:.1em;text-transform:uppercase;border-bottom:none;color:#000;
+    white-space:nowrap;
+  }
+  .catalog-link:hover{background:#000;color:#fff}
+  .catalog-link.active{
+    background:repeating-linear-gradient(135deg,#aaa 0 2px,#c0c0c0 2px 4px);
+    border-top:1px solid var(--chrome-dk);border-left:1px solid var(--chrome-dk);
+    border-right:1px solid #fff;
+  }
+  .catalog-clock{
+    margin-left:auto;padding:0 14px;font-family:'Space Mono',monospace;font-size:12px;
+    border-left:1px solid var(--chrome-dk);height:100%;display:flex;align-items:center;
+    letter-spacing:.1em;
+  }
+  .catalog-title{
+    padding:0 14px;font-family:'Space Mono',monospace;font-size:11px;
+    height:100%;display:flex;align-items:center;
+    letter-spacing:.1em;text-transform:uppercase;border-right:1px solid var(--chrome-dk);
+    font-weight:600;
+  }
+
+  /* ===== HERO ===== */
+.hero{
+  height: 135vh;
+  padding: 60px 4vw 20px;
+  background:#ffffff;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 30px;
+  overflow: hidden;
+  margin-bottom: 0px;
+}
+
+/* ===== HERO INFO BOX (separate section) ===== */
+.hero-info-box{
+  max-width: 1300px;
+  margin: -40px auto 60px;
+  padding: 40px 4vw;
+  background: rgba(255, 255, 255, 0.02);
+  border: 2px solid #000;
+  box-shadow: 4px 4px 0 #000;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+  /* background image layer — filled by JS */
+
+.hero-bg-layer{
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 100%;
+  height: auto;
+  max-width: none;
+  object-fit: contain;
+  object-position: center top;
+  transform: translateX(-50%) scale(1);
+  transform-origin: top center;
+  z-index: 0;
+}
+  /* 10% white fade */
+  .hero-bg-overlay{
+    position:absolute;inset:0;z-index:1;
+    background:rgba(255,255,255,.10);
+  }
+  .hero>*:not(.hero-bg-layer):not(.hero-bg-overlay){
+    position:relative;z-index:2;
+  }
+.hero-kicker{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 265px;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  letter-spacing: .2em;
+  color: #000;
+  text-transform: uppercase;
+  border-bottom: 1px dashed #000;
+  padding-bottom: 10px;
+  text-shadow: 0 0 3px #fff, 0 0 6px #fff;
+  transform: translateY(20px);
+}
+  .hero-kicker .blink{animation:blink 1s steps(2) infinite;color:#000}
+  @keyframes blink{50%{opacity:0}}
+
+.hero-title{
+  font-family: 'Pixelogist','Press Start 2P',monospace;
+  font-size: clamp(36px, 12vw, 300px);
+  margin-top: 20px;
+  margin-bottom:240px;
+  margin-left: 40px;
+  margin-right: 40px;
+  line-height: .82;
+  color: #000;
+  letter-spacing: -.02em;
+  text-shadow: 4px 4px 0 rgba(200,200,200,.7), 0 0 16px rgba(255,255,255,.9);
+  position: relative;
+  transform: translateY(-150px);
+}
+
+.hero-title .pixel-word{
+  display: block;
+}
+
+.hero-sub{
+  font-family: 'Pixelogist','Major Mono Display',monospace;
+  font-size: clamp(15px, 4vw, 49px);
+  -webkit-text-stroke: 2px #000000;
+  letter-spacing: .04em;
+  line-height: 1;
+  text-align: center;
+  transform: none;
+}
+
+
+.hero-meta{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  font-family:'VT323',monospace;
+  font-size:18px;
+  width: 100%;
+}
+  .hero-meta .cell{
+    border:2px solid #000;padding:35px 12px;
+    background:rgba(255,255,255,.75);position:relative;
+  }
+  .hero-meta .cell::before{
+    content:"";position:absolute;top:4px;right:4px;width:6px;height:6px;
+    background:#000;animation:blink 1.4s steps(2) infinite;
+  }
+  .hero-meta .lbl{color:#555;text-transform:uppercase;font-size:12px;letter-spacing:.15em;font-family:'Space Mono',monospace}
+  .hero-meta .val{color:#000;font-size:22px;margin-top:4px;font-weight:bold}
+
+  .bg-project-info{
+    margin-top:250px;
+    margin-bottom:40px;
+    font-family:'Space Mono',monospace;
+    font-size:12px;
+    letter-spacing:.1em;
+    color:#666;
+  }
+  .bg-project-info .bg-date{
+    display:block;
+    margin-bottom:6px;
+    color:#999;
+    font-size:11px;
+  }
+  .bg-project-info .bg-title{
+    display:block;
+    color:#333;
+    font-size:14px;
+    font-weight:500;
+  }
+
+  .quicknav{display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  font-family:'VT323',monospace;
+  font-size:18px;
+  width: 100%;
+}
+  .qbtn{
+    font-family:'VT323',monospace;font-size:18px;
+    padding:6px 12px;background:rgba(255,255,255,.85);color:#000;
+    border:2px solid #000;
+    text-transform:uppercase;letter-spacing:.1em;transition:all .1s;
+  }
+  .qbtn:hover{background:#000;color:#fff;box-shadow:2px 2px 0 #888}
+
+  /* ===== SVG LIQUID FILTER (hidden) ===== */
+  .svg-filters{position:absolute;width:0;height:0;overflow:hidden}
+
+  /* ===== SCROLL REVEAL + LIQUID EDGES ===== */
+  .scroll-reveal{
+    opacity:0;
+    filter:url(#liquid);
+    transform:translateY(32px) scaleY(.97);
+    transition:opacity .75s cubic-bezier(.22,1,.36,1),
+               filter .75s cubic-bezier(.22,1,.36,1),
+               transform .75s cubic-bezier(.22,1,.36,1);
+  }
+  .scroll-reveal.visible{
+    opacity:1;
+    filter:none;
+    transform:translateY(0) scaleY(1);
+  }
+  .scroll-reveal.exiting{
+    opacity:0;
+    filter:url(#liquid);
+    transform:translateY(-24px) scaleY(.97);
+  }
+
+  /* ===== WINDOW ===== */
+  .window{
+    background:var(--chrome);
+    border-top:2px solid var(--chrome-lt);border-left:2px solid var(--chrome-lt);
+    border-right:2px solid #000;border-bottom:2px solid #000;
+    box-shadow:4px 4px 0 #000;
+    color:#000;font-family:'VT323',monospace;position:relative;
+  }
+  .window .titlebar{
+    display:flex;align-items:center;justify-content:space-between;
+    background:linear-gradient(90deg,#000 0%,#444 100%);
+    color:#fff;padding:3px 4px 3px 8px;font-family:'VT323',monospace;font-size:18px;
+    user-select:none;
+  }
+  .window .titlebar .t-left{display:flex;align-items:center;gap:8px}
+  .window .titlebar .t-icon{width:14px;height:14px;background:#fff;border:1px solid #000;display:inline-block}
+  .window .titlebar .t-ctrl{display:flex;gap:2px}
+  .window .titlebar .t-ctrl button{
+    width:18px;height:16px;background:var(--chrome);
+    border-top:1px solid #fff;border-left:1px solid #fff;
+    border-right:1px solid #000;border-bottom:1px solid #000;
+    color:#000;font-family:'Press Start 2P',monospace;font-size:7px;line-height:1;
+  }
+  .window .menubar{
+    background:var(--chrome);padding:2px 4px;
+    border-bottom:1px solid var(--chrome-dk);
+    font-size:17px;display:flex;gap:12px;
+  }
+  .window .menubar span{padding:1px 6px;}
+  .window .menubar span:hover{background:#000;color:#fff}
+  .window .menubar u{text-decoration:underline}
+  .window .win-body{
+    background:#000;color:#fff;
+    padding:22px;border-top:1px solid var(--chrome-dk);
+  }
+  .window .statusbar{
+    display:flex;justify-content:space-between;
+    background:var(--chrome);padding:2px 6px;
+    border-top:1px solid #fff;font-size:15px;color:#000;
+  }
+  .window .statusbar .sb{
+    padding:0 8px;
+    border-top:1px solid var(--chrome-dk);border-left:1px solid var(--chrome-dk);
+    border-right:1px solid #fff;border-bottom:1px solid #fff;
+  }
+
+  /* ===== SECTION WRAPPER (for windows) ===== */
+  .section-wrap{
+    max-width:1300px;margin:60px auto;padding:0 24px;
+  }
+
+  /* ===== SECTION HEADINGS ===== */
+  .sec-head{
+    display:flex;align-items:baseline;gap:14px;margin-bottom:16px;
+    border-bottom:1px dashed #555;padding-bottom:8px;
+  }
+  .sec-head h2{font-family:'Pixel','Press Start 2P',monospace;font-size:16px;color:#fff;letter-spacing:.05em}
+  .sec-head .num{font-family:'Space Mono',monospace;font-size:11px;color:#aaa;letter-spacing:.2em}
+  .sec-head .addr{margin-left:auto;font-family:'Space Mono',monospace;font-size:11px;color:#666}
+
+  /* ===== ABOUT ===== */
+  .about-grid{display:grid;grid-template-columns:260px 1fr;gap:24px}
+  .avatar-frame{
+    background:#000;border:2px solid #fff;
+    padding:6px;position:relative;box-shadow:6px 6px 0 #555;
+  }
+  .avatar-frame .pxavatar{width:100%;aspect-ratio:1;image-rendering:pixelated;position:relative;overflow:hidden}
+  .pxavatar svg{width:100%;height:100%;display:block;image-rendering:pixelated}
+  .pxavatar img{width:100%;height:100%;display:block;image-rendering:pixelated;position:absolute;top:0;left:0;object-fit:cover}
+  .pxavatar .selfie-1{opacity:1;transition:opacity 0.6s ease}
+  .pxavatar .selfie-2{opacity:0;transition:opacity 0.6s ease}
+  .pxavatar.hover-selfie .selfie-1{opacity:0}
+  .pxavatar.hover-selfie .selfie-2{opacity:1}
+  .avatar-frame .tag{
+    position:absolute;top:-14px;left:-14px;
+    background:#fff;color:#000;
+    font-family:'Press Start 2P',monospace;font-size:8px;
+    padding:6px 8px;letter-spacing:.1em;transform:rotate(-4deg);
+    border:2px solid #000;box-shadow:2px 2px 0 #000;
+  }
+  .avatar-frame .caption{color:#fff;font-family:'Space Mono',monospace;font-size:11px;text-align:center;padding:8px 0 0;letter-spacing:.1em}
+  .about-copy p{margin-bottom:12px;font-size:19px;color:#fff}
+  .about-copy .hi{font-family:'Major Mono Display',monospace;font-size:36px;color:#fff;margin-bottom:14px;line-height:1}
+  .about-copy .hi span{color:#888}
+  .about-copy .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+  .about-copy .stats .s{border:1px solid #444;padding:10px;background:rgba(255,255,255,.04)}
+  .about-copy .stats .s b{color:#fff;font-size:28px;display:block;font-family:'Press Start 2P',monospace}
+  .about-copy .stats .s small{color:#888;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+
+  /* ===== PROJECTS — one-per-row 2/3 + 1/3 layout ===== */
+  .proj-row{
+    display:grid;
+    grid-template-columns:1fr 2fr;
+    gap:32px;
+    align-items:center;
+    margin-bottom:50px;
+  }
+  /* alternate: even rows flip to window-left, desc-right */
+  .proj-row:nth-child(even){
+    grid-template-columns:2fr 1fr;
+  }
+  .proj-row:nth-child(even) .proj-desc{order:2}
+  .proj-row:nth-child(even) .proj-win{order:1}
+
+  .proj-desc{
+    padding:16px 10px;
+    color:#000;font-family:'VT323',monospace;
+  }
+  .proj-desc .pd-tag{
+    font-family:'Press Start 2P',monospace;font-size:8px;
+    letter-spacing:.12em;color:#555;text-transform:uppercase;
+    border:1px solid #ccc;display:inline-block;padding:4px 8px;
+    margin-bottom:12px;
+  }
+  .proj-desc h3{
+    font-family:'Pixelogist','Press Start 2P',monospace;font-size:42px;
+    color:#000;margin-bottom:10px;letter-spacing:.04em;line-height:1.2;
+  }
+  .proj-desc p{
+    font-size:19px;color:#333;line-height:1.5;margin-bottom:14px;
+  }
+  .proj-desc .pd-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
+  .proj-desc .pd-tags span{
+    font-family:'Space Mono',monospace;font-size:10px;
+    padding:2px 8px;border:1px solid #aaa;color:#555;
+    text-transform:uppercase;letter-spacing:.1em;
+  }
+  .proj-desc .pd-link{
+    display:inline-block;
+    font-family:'VT323',monospace;font-size:18px;
+    padding:6px 14px;border:2px solid #000;background:#fff;color:#000;
+    letter-spacing:.1em;border-bottom:2px solid #000;
+    transition:all .1s;
+  }
+  .proj-desc .pd-link:hover{background:#000;color:#fff}
+
+  /* project window (no extra margin, fills its grid column) */
+  .proj-win .thumb{
+    aspect-ratio:16/9;width:100%;
+    border-bottom:2px solid #fff;
+    position:relative;overflow:hidden;
+  }
+  .proj-win .thumb .label{
+    position:absolute;top:8px;left:8px;
+    background:#fff;color:#000;
+    font-family:'Press Start 2P',monospace;font-size:8px;padding:4px 6px;
+    letter-spacing:.1em;z-index:3;
+  }
+  .proj-win .thumb .yr{
+    position:absolute;top:8px;right:8px;
+    background:#000;color:#fff;
+    font-family:'Space Mono',monospace;font-size:11px;
+    padding:4px 6px;border:1px solid #fff;z-index:3;
+  }
+  .th-1{
+    background:
+      linear-gradient(135deg,#fff 0 25%,transparent 25%) 0 0/16px 16px,
+      linear-gradient(45deg,#444 0 25%,transparent 25%) 8px 8px/16px 16px,
+      #000;
+    image-rendering:pixelated;
+  }
+  .th-2{background:repeating-linear-gradient(0deg,#1a1a1a 0 3px,#000 3px 6px);position:relative}
+  .th-2::after{content:"< WIREFRAME />";position:absolute;inset:0;display:grid;place-items:center;font-family:'Press Start 2P',monospace;font-size:14px;color:#fff}
+  .th-3{background:repeating-conic-gradient(#000 0deg 45deg,#2a2a2a 45deg 90deg) 0 0/32px 32px}
+  .th-4{
+    background:
+      radial-gradient(circle at 30% 30%,#fff 0 12%,transparent 13%),
+      radial-gradient(circle at 70% 60%,#777 0 10%,transparent 11%),
+      radial-gradient(circle at 50% 80%,#444 0 8%,transparent 9%),
+      repeating-linear-gradient(45deg,#111 0 8px,#000 8px 16px);
+  }
+
+  /* ===== SKILLS ===== */
+  .skills-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:24px}
+  .skill-list .row{display:grid;grid-template-columns:140px 1fr 60px;align-items:center;gap:10px;margin-bottom:10px;font-family:'VT323',monospace;font-size:18px}
+  .skill-list .name{color:#fff}
+  .skill-list .bar{height:14px;background:#000;border:1px solid #444;position:relative;overflow:hidden}
+  .skill-list .bar::before{
+    content:"";position:absolute;inset:0;
+    background:repeating-linear-gradient(90deg,#fff 0 8px,transparent 8px 10px);
+    width:var(--v,50%);
+  }
+  .skill-list .pct{color:#fff;font-family:'Space Mono',monospace;font-size:12px;text-align:right}
+  .software-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .sw{border:2px solid #fff;aspect-ratio:1;display:grid;place-items:center;text-align:center;padding:8px;background:#000;font-family:'Press Start 2P',monospace;font-size:9px;color:#fff;position:relative}
+  .sw .ico{font-size:22px;margin-bottom:6px;color:#ccc}
+  .sw::after{content:"";position:absolute;top:3px;right:3px;width:5px;height:5px;background:#fff}
+
+  /* ===== RESUME ===== */
+  .resume-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .res-col h3{font-family:'Press Start 2P',monospace;font-size:12px;color:#ccc;margin-bottom:12px;padding-bottom:6px;border-bottom:1px dashed #444;letter-spacing:.05em}
+  .res-item{margin-bottom:16px;padding-left:14px;border-left:2px solid #fff;position:relative}
+  .res-item::before{content:"▸";position:absolute;left:-10px;top:0;color:#fff;background:#000;padding:0 2px}
+  .res-item .top{display:flex;justify-content:space-between;font-family:'VT323',monospace;font-size:19px}
+  .res-item .role{color:#fff}
+  .res-item .when{color:#888;font-family:'Space Mono',monospace;font-size:11px}
+  .res-item .place{color:#ccc;font-size:17px;margin-bottom:4px}
+  .res-item p{font-size:16px;color:#888;line-height:1.4}
+
+  /* ===== CONTACT ===== */
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+  .terminal{background:#000;border:2px solid #fff;font-family:'VT323',monospace;font-size:18px;color:#fff;padding:14px;min-height:260px;position:relative}
+  .terminal .prompt{color:#fff}
+  .terminal .cmd{color:#ccc}
+  .terminal .out{color:#888;margin-left:0;margin-bottom:6px}
+  .terminal .cursor{display:inline-block;width:10px;height:18px;background:#fff;animation:blink 1s steps(2) infinite;vertical-align:middle}
+  .contact-card{background:#000;border:2px solid #fff;padding:18px;box-shadow:6px 6px 0 #555}
+  .contact-card h3{font-family:'Press Start 2P',monospace;font-size:14px;color:#fff;margin-bottom:12px}
+  .contact-card .row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dotted #333;font-family:'VT323',monospace;font-size:18px}
+  .contact-card .row:last-child{border-bottom:none}
+  .contact-card .row .k{color:#888;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;align-self:center}
+  .contact-card .row .v{color:#fff}
+  .contact-card .cta{display:flex;gap:8px;margin-top:14px}
+  .contact-card .cta button{flex:1;padding:10px;font-family:'Press Start 2P',monospace;font-size:10px;background:#fff;color:#000;border:2px solid #000;box-shadow:3px 3px 0 #888;letter-spacing:.05em}
+  .contact-card .cta button.alt{background:#000;color:#fff;border:2px solid #fff}
+  .contact-card .cta button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #888}
+
+  /* ===== POPUP ===== */
+  .popup{
+    position:fixed;z-index:900;
+    background:var(--chrome);
+    border-top:2px solid #fff;border-left:2px solid #fff;
+    border-right:2px solid #000;border-bottom:2px solid #000;
+    box-shadow:4px 4px 0 rgba(0,0,0,.6);
+    width:300px;color:#000;font-family:'VT323',monospace;
+  }
+  .popup .tb{background:linear-gradient(90deg,#000,#444);color:#fff;padding:2px 6px;font-size:16px;display:flex;justify-content:space-between;user-select:none}
+  .popup .tb button{width:16px;height:14px;background:var(--chrome);color:#000;border:1px solid #000;font-family:'Press Start 2P',monospace;font-size:7px;line-height:1}
+  .popup .bd{padding:14px;display:flex;gap:12px;align-items:flex-start;font-size:17px}
+  .popup .bd .ic{width:32px;height:32px;flex:none;background:#000;color:#fff;display:grid;place-items:center;font-family:'Press Start 2P',monospace;font-size:16px;border:2px solid #000}
+  .popup .btns{padding:0 14px 12px;display:flex;justify-content:flex-end;gap:6px}
+  .popup .btns button{min-width:68px;padding:4px 8px;background:var(--chrome);border-top:1px solid #fff;border-left:1px solid #fff;border-right:1px solid #000;border-bottom:1px solid #000;font-family:'VT323',monospace;font-size:16px;}
+
+  /* ===== FAB ===== */
+  .fab{
+    position:fixed;right:14px;bottom:48px;z-index:800;
+    width:44px;height:44px;background:#000;color:#fff;border:2px solid #000;
+    font-family:'Press Start 2P',monospace;font-size:12px;
+    box-shadow:3px 3px 0 #888;
+    opacity:0;transform:translateY(10px);transition:all .2s;
+  }
+  .fab.show{opacity:1;transform:translateY(0)}
+  .fab:hover{background:#fff;color:#000}
+
+  /* ===== VISITOR ===== */
+  .visitor{max-width:1300px;margin:20px auto;padding:0 24px;display:flex;gap:12px;justify-content:center;font-family:'VT323',monospace;font-size:16px;color:#555;align-items:center;flex-wrap:wrap}
+  .counter{display:inline-flex;gap:2px;background:#000;padding:4px 6px;border:1px solid #000}
+  .counter b{background:#000;color:#fff;padding:2px 4px;font-family:'Press Start 2P',monospace;font-size:11px;border:1px solid #333}
+  .web-ring{display:flex;gap:4px}
+  .web-ring a{padding:3px 8px;border:1px solid #000;color:#000;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;border-bottom:1px dashed #000}
+
+  /* ===== FOOTER ===== */
+  footer{max-width:1300px;margin:40px auto 60px;padding:16px 24px;text-align:center;font-family:'VT323',monospace;color:#555;font-size:15px;border-top:1px dashed #000}
+  footer .sig{font-family:'Press Start 2P',monospace;color:#000;font-size:11px;letter-spacing:.2em;margin-bottom:6px}
+
+  /* ===== TASKBAR ===== */
+  .taskbar{
+    position:fixed;bottom:0;left:0;right:0;height:36px;z-index:1000;
+    background:var(--chrome);
+    border-top:2px solid var(--chrome-lt);
+    box-shadow:inset 0 1px 0 #fff,0 -2px 0 #000;
+    display:flex;align-items:center;gap:4px;padding:3px 4px;
+    font-family:'VT323',monospace;color:#000;font-size:18px;
+  }
+  .start-btn{
+    height:28px;padding:0 10px;display:flex;align-items:center;gap:6px;
+    background:var(--chrome);
+    border-top:2px solid #fff;border-left:2px solid #fff;
+    border-right:2px solid #000;border-bottom:2px solid #000;
+    font-weight:700;font-family:'VT323',monospace;font-size:18px;
+  }
+  .start-btn:active{border-top:2px solid #000;border-left:2px solid #000;border-right:2px solid #fff;border-bottom:2px solid #fff}
+  .start-btn .logo{
+    width:14px;height:14px;display:inline-block;
+    background:
+      linear-gradient(45deg,#000 50%,#888 50%) top left/50% 50% no-repeat,
+      linear-gradient(45deg,#555 50%,#000 50%) top right/50% 50% no-repeat,
+      linear-gradient(45deg,#333 50%,#ccc 50%) bottom left/50% 50% no-repeat,
+      linear-gradient(45deg,#ccc 50%,#333 50%) bottom right/50% 50% no-repeat;
+    background-color:#000;
+  }
+  .task-item{
+    height:28px;padding:0 10px;display:flex;align-items:center;gap:6px;
+    background:var(--chrome);
+    border-top:2px solid #fff;border-left:2px solid #fff;
+    border-right:2px solid #000;border-bottom:2px solid #000;
+    font-family:'VT323',monospace;font-size:17px;
+    max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .task-item.active{
+    border-top:2px solid #000;border-left:2px solid #000;
+    border-right:2px solid #fff;border-bottom:2px solid #fff;
+    background:repeating-linear-gradient(135deg,#a0a0a0 0 2px,#c0c0c0 2px 4px);
+  }
+  .tray{
+    margin-left:auto;display:flex;align-items:center;gap:8px;
+    padding:0 10px;height:28px;
+    border-top:2px solid #000;border-left:2px solid #000;
+    border-right:2px solid #fff;border-bottom:2px solid #fff;
+    font-family:'VT323',monospace;font-size:17px;background:var(--chrome);
+  }
+  .tray .sysicon{font-size:13px;font-family:'Press Start 2P',monospace;color:#000}
+  .tray .clock{min-width:74px;text-align:center}
+
+  /* ===== BOOT ===== */
+  .boot{position:fixed;inset:0;z-index:9999;background:#000;color:#fff;font-family:'VT323',monospace;font-size:20px;padding:40px;animation:bootOut 3.4s forwards}
+  @keyframes bootOut{0%,85%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden}}
+  .boot .line{opacity:0;animation:line .2s forwards}
+  .boot .line:nth-child(1){animation-delay:.1s}
+  .boot .line:nth-child(2){animation-delay:.5s}
+  .boot .line:nth-child(3){animation-delay:.9s}
+  .boot .line:nth-child(4){animation-delay:1.3s}
+  .boot .line:nth-child(5){animation-delay:1.7s}
+  .boot .line:nth-child(6){animation-delay:2.1s;color:#ccc}
+  .boot .line:nth-child(7){animation-delay:2.5s}
+  @keyframes line{to{opacity:1}}
+
+  @media (max-width:900px){
+    .hero-meta{grid-template-columns:repeat(2,1fr)}
+    .about-grid,.skills-grid,.resume-grid,.contact-grid{grid-template-columns:1fr}
+    .proj-row,.proj-row:nth-child(even){grid-template-columns:1fr;gap:16px}
+    .proj-row:nth-child(even) .proj-desc,.proj-row:nth-child(even) .proj-win{order:unset}
+    .skill-list .row{grid-template-columns:100px 1fr 48px}
+    .task-item{display:none}
+    .section-wrap{padding:0 12px;margin:40px auto}
+    .hero{padding:20px 16px 60px}
+    .hero-info-box{padding:20px 16px}
+  }
+</style>
+</head>
+<body>
+
+<!-- SVG LIQUID FILTER -->
+<svg class="svg-filters" aria-hidden="true">
+  <defs>
+    <filter id="liquid" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018 0.032" numOctaves="3" seed="7" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="22" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- BOOT -->
+<div class="boot" id="boot">
+  <div class="line">PIXELATOR BIOS v2.4.1 (c) 1998-2026</div>
+  <div class="line">Detecting portfolio modules... OK</div>
+  <div class="line">Loading: /sys/identity.dat ... OK</div>
+  <div class="line">Loading: /sys/projects.dat ... OK</div>
+  <div class="line">Mounting resume.fs ... OK</div>
+  <div class="line">&gt; ALL SYSTEMS NOMINAL</div>
+  <div class="line">Launching shell...</div>
+</div>
+
+<!-- CATALOG BAR -->
+<nav class="catalog-bar">
+  <a class="home-btn" href="#home" title="Home" onclick="rotateHeroImage();scrollTo2('#home');return false;">
+    <!-- pixel flower -->
+    <svg width="20" height="20" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+      <rect x="7" y="0" width="2" height="3" fill="#000"/>
+      <rect x="7" y="13" width="2" height="3" fill="#000"/>
+      <rect x="0" y="7" width="3" height="2" fill="#000"/>
+      <rect x="13" y="7" width="3" height="2" fill="#000"/>
+      <rect x="2" y="2" width="2" height="2" fill="#000"/>
+      <rect x="12" y="2" width="2" height="2" fill="#000"/>
+      <rect x="2" y="12" width="2" height="2" fill="#000"/>
+      <rect x="12" y="12" width="2" height="2" fill="#000"/>
+      <rect x="5" y="5" width="6" height="6" fill="#000"/>
+      <rect x="6" y="6" width="4" height="4" fill="#fff"/>
+      <rect x="7" y="7" width="2" height="2" fill="#666"/>
+    </svg>
+  </a>
+  <span class="catalog-title">CATALOGUE</span>
+  <a class="catalog-link" href="#about" onclick="scrollTo2('#about');return false;">About</a>
+  <a class="catalog-link" href="#projects" onclick="scrollTo2('#projects');return false;">Projects</a>
+  <a class="catalog-link" href="#skills" onclick="scrollTo2('#skills');return false;">Skills</a>
+  <a class="catalog-link" href="#resume" onclick="scrollTo2('#resume');return false;">Resume</a>
+  <a class="catalog-link" href="#contact" onclick="scrollTo2('#contact');return false;">Contact</a>
+  <span class="catalog-clock" id="cat-clock">12:00 AM</span>
+</nav>
+
+<!-- HERO — MAIN PAGE SECTION -->
+<section class="hero" id="home">
+  <img id="hero-bg" class="hero-bg-layer" src="images/home_image.jpg" />
+  <div class="hero-bg-overlay"></div>
+
+  <div class="hero-kicker">
+    <span>[ SYS ] // PORTFOLIO.EXE :: LOADED</span>
+    <span><span class="blink">●</span> AVAILABLE</span>
+  </div>
+
+  <div class="bg-project-info">
+    <span class="bg-date">Oct 2024</span>
+    <span class="bg-title">Silicon & Resin, "Vessel"</span>
+  </div>
+
+  <div class="hero-title">
+  </div>
+</section>
+
+<!-- INTERACTIVE DESIGNER SECTION -->
+<section class="hero-info-box">
+  <div class="hero-sub">Interactive Media Design & Develop</div>
+
+  <div class="hero-meta">
+    <div class="cell"><div class="lbl">Format</div><div class="val">WEBGL / HTML / JS / CSS</div></div>
+    <div class="cell"><div class="lbl">Effect Strength</div><div class="val">VARIABLE</div></div>
+    <div class="cell"><div class="lbl">Resolution</div><div class="val">4520 × 2995</div></div>
+    <div class="cell"><div class="lbl">Status</div><div class="val">UNDERGRADUATE STUDENT</div></div>
+  </div>
+
+  <div class="quicknav">
+    <button class="qbtn" onclick="scrollTo2('#about')">&gt; ABOUT</button>
+    <button class="qbtn" onclick="scrollTo2('#projects')">&gt; PROJECTS</button>
+    <button class="qbtn" onclick="scrollTo2('#skills')">&gt; SKILLS</button>
+    <button class="qbtn" onclick="scrollTo2('#resume')">&gt; RESUME</button>
+    <button class="qbtn" onclick="scrollTo2('#contact')">&gt; CONTACT</button>
+    <button class="qbtn" onclick="openPopup()">&gt; ERROR.TXT</button>
+  </div>
+</section>
+
+<!-- ABOUT WINDOW -->
+<div class="section-wrap">
+  <section class="window scroll-reveal" id="about">
+    <div class="titlebar">
+      <div class="t-left"><span class="t-icon"></span><span>about_me.txt — Notepad</span></div>
+      <div class="t-ctrl"><button>_</button><button>□</button><button>X</button></div>
+    </div>
+    <div class="menubar"><span><u>F</u>ile</span><span><u>E</u>dit</span><span><u>S</u>earch</span><span><u>H</u>elp</span></div>
+    <div class="win-body">
+      <div class="sec-head">
+        <span class="num">01</span>
+        <h2>WHO.AM.I</h2>
+        <span class="addr">C:\USERS\ME\ABOUT.TXT</span>
+      </div>
+      <div class="about-grid">
+        <div>
+          <div class="avatar-frame">
+            <span class="tag">[ SELFIE.BMP ]</span>
+            <div class="pxavatar">
+              <img src="images/selfie_1.png" alt="Selfie 1" class="selfie-1">
+              <img src="images/selfie_2.png" alt="Selfie 2" class="selfie-2">
+            </div>
+            <div class="caption">&gt; RENDERED @ 16×16</div>
+          </div>
+        </div>
+        <div class="about-copy">
+          <div class="hi">&gt; hello<span>_</span>world</div>
+          <p>I'm a multidisciplinary designer &amp; developer, part of RISD's CTC members. I build interfaces that feel like they were archived from a timeline where the nostalgia that never faded — heavy on <b style="color:#fff">2D and 3Dgraphic experiments</b>, vibe-coding, and modeling using 3D tools such: Blender, Three.js.</p>
+          <p>Currently at Providence. Obsessed with Web-design, 3D tooling, and the flexible with Adobe Suites. I make things that slowly loads our memory on purpose.</p>
+          <div class="stats">
+            <div class="s"><b>13</b><small>Projects Shipped</small></div>
+            <div class="s"><b>03</b><small>Years Coding</small></div>
+            <div class="s"><b>∞</b><small>BMP Files Saved</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="statusbar"><span class="sb">Ln 1, Col 1</span><span class="sb">UTF-8</span><span class="sb">100%</span></div>
+  </section>
+</div>
+
+<!-- PROJECTS -->
+<div class="section-wrap" id="projects">
+  <div style="margin-bottom:24px;border-bottom:2px solid #000;padding-bottom:10px;display:flex;align-items:baseline;gap:12px">
+    <span style="font-family:'Space Mono',monospace;font-size:11px;color:#888;letter-spacing:.2em">02</span>
+    <h2 style="font-family:'Pixel','Press Start 2P',monospace;font-size:18px;letter-spacing:.05em">SELECTED.WORK</h2>
+    <span style="margin-left:auto;font-family:'Space Mono',monospace;font-size:11px;color:#aaa">C:\PROJECTS\*.*</span>
+  </div>
+
+  <!-- PROJECT 1 -->
+  <!-- PROJECT 2 -->
+  <div class="proj-row scroll-reveal">
+    <div class="proj-desc">
+      <span class="pd-tag">UNITY · 2026</span>
+      <h3>MEMORY</h3>
+      <p>A spatial loop built in Unity where environments subtly noise in as the player moves through them, reflecting the instability and repetition of human memory.</p>
+      <div class="pd-tags"><span>TYPE</span><span>SHADER</span><span>WEBGL</span></div>
+      <a class="pd-link" href="#">PLAY NOW →</a>
+    </div>
+    <div class="window proj-win">
+      <div class="titlebar">
+        <div class="t-left"><span class="t-icon"></span><span>MEMORY.exe</span></div>
+        <div class="t-ctrl"><button>_</button><button>□</button><button>X</button></div>
+      </div>
+      <div class="win-body" style="padding:0">
+        <div style="position:relative; width:100%; padding-top:56.25%;">
+  <iframe 
+    src="https://www.youtube.com/embed/kaXtOz1HjjQ"
+    title="MEMORY"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="position:absolute; top:0; left:0; width:100%; height:100%;">
+  </iframe>
+</div>
+      </div>
+      <div class="statusbar"><span class="sb">/// ARCHIVED</span><span class="sb">Ready</span></div>
+    </div>
+  </div>
+
+  <!-- PROJECT 3 -->
+  <div class="proj-row scroll-reveal">
+    <div class="proj-desc">
+      <span class="pd-tag">Laboratory · 2025</span>
+      <h3>Generative Creature Lab</h3>
+      <p>User interactive based generating creature laboratory. Exploring 2d graphics with UI/UX design of webdesign with interactive features.</p>
+      <div class="pd-tags"><span>WEB-DESIGN</span><span>COLLAGE</span><span>GENERATIVE</span></div>
+      <a class="pd-link" href="https://cheerful-belekoy-866115.netlify.app/" target="_blank">PLAY NOW →</a>
+    </div>
+    <div class="window proj-win">
+      <div class="titlebar">
+        <div class="t-left"><span class="t-icon"></span><span>record_creature.bmp</span></div>
+        <div class="t-ctrl"><button>_</button><button>□</button><button>X</button></div>
+      </div>
+      <div class="win-body" style="padding:0">
+        <div class="thumb th-3" style="position:relative;">
+          <span class="label">GENERATIVE</span><span class="yr">2025</span>
+          <img src="images/gen_creature.png" alt="Gen Creature" style="width:100%; height:auto; display:block;"">
+        </div>
+      </div>
+      <div class="statusbar"><span class="sb">/// LIVE NOW</span><span class="sb">Ready</span></div>
+    </div>
+  </div>
+
+  <!-- PROJECT 3 (MYSPRUEKIT) -->
+  <div class="proj-row scroll-reveal">
+    <div class="proj-desc">
+      <span class="pd-tag">FEATURED · 2026</span>
+      <h3>MYSPRUEKIT</h3>
+      <p>Interactive media piece that explores my identity as a modular, constructed 3D system. Questions of control and the boundaries between self and object in contemporary digital culture.</p>
+      <div class="pd-tags"><span>THREE.JS</span><span>VITE</span><span>WEBGL</span><span>CSS-3D</span></div>
+      <a class="pd-link" href="https://eneriel0922.github.io/build_me/" target="_blank">VIEW PROJECT →</a>
+    </div>
+    <div class="window proj-win">
+      <div class="titlebar">
+        <div class="t-left"><span class="t-icon"></span><span>myspruekit.exe</span></div>
+        <div class="t-ctrl"><button>_</button><button>□</button><button>X</button></div>
+      </div>
+      <div class="win-body" style="padding:0">
+        <img src="images/sprue_kit.png" alt="MySprue Kit" style="width:100%; height:auto; display:block;">
+      </div>
+      <div class="statusbar"><span class="sb">/// IMAGE ONLY</span><span class="sb">Ready</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SKILLS WINDOW -->
+<div class="section-wrap">
+  <section class="window scroll-reveal" id="skills">
+    <div class="titlebar">
+      <div class="t-left"><span class="t-icon"></span><span>skills.cfg — System Properties</span></div>
+      <div class="t-ctrl"><button>_</button><button>□</button><button>X</button></div>
+    </div>
+    <div class="menubar"><span><u>G</u>eneral</span><span><u>S</u>oftware</span><span><u>H</u>ardware</span><span><u>P</u>erformance</span></div>
+    <div class="win-body">
+      <div class="sec-head">
+        <span class="num">03</span>
+        <h2>CAPABILITIES.EXE</h2>
+        <span class="addr">C:\SYSTEM\SKILLS.CFG</span>
+      </div>
+      <div class="skills-grid">
+        <div class="skill-list">
+          <h3 style="font-family:'Press Start 2P',monospace;font-size:11px;color:#ccc;margin-bottom:12px;letter-spacing:.05em">// TECHNICAL</h3>
+          <div class="row"><span class="name">HTML / CSS</span><span class="bar" style="--v:85%"></span><span class="pct">85%</span></div>
+          <div class="row"><span class="name">JavaScript</span><span class="bar" style="--v:88%"></span><span class="pct">88%</span></div>
+          <div class="row"><span class="name">Three.js / WebGL</span><span class="bar" style="--v:74%"></span><span class="pct">74%</span></div>
+          <div class="row"><span class="name">Adobe Photoshop</span><span class="bar" style="--v:90%"></span><span class="pct">90%</span></div>
+          <div class="row"><span class="name">Adobe Illlustrator</span><span class="bar" style="--v:92%"></span><span class="pct">92%</span></div>
+          <div class="row"><span class="name">3D Modeling</span><span class="bar" style="--v:78%"></span><span class="pct">78%</span></div>
+          <div class="row"><span class="name">Illustration</span><span class="bar" style="--v:85%"></span><span class="pct">85%</span></div>
+          <div class="row"><span class="name">Animation/Motion</span><span class="bar" style="--v:52%"></span><span class="pct">52%</span></div>
+        </div>
+        <div>
+          <h3 style="font-family:'Press Start 2P',monospace;font-size:11px;color:#ccc;margin-bottom:12px;letter-spacing:.05em">// SOFTWARE</h3>
+          <div class="software-grid">
+            <div class="sw"><div class="ico">Ai</div>ILLUSTRATOR</div>
+            <div class="sw"><div class="ico">Ps</div>PHOTOSHOP</div>
+            <div class="sw"><div class="ico">Id</div>INDESIGN</div>
+            <div class="sw"><div class="ico">◆</div>BLENDER</div>
+            <div class="sw"><div class="ico">Fg</div>FIGMA</div>
+            <div class="sw"><div class="ico">&lt;/&gt;</div>VSCODE</div>
+            <div class="sw"><div class="ico">▲</div>UNITY</div>
+            <div class="sw"><div class="ico">◐</div>UNREAL</div>
+            <div class="sw"><div class="ico">✱</div>AFTER FX</div>
+          </div>
+          <h3 style="font-family:'Press Start 2P',monospace;font-size:11px;color:#ccc;margin:16px 0 10px;letter-spacing:.05em">// LANGUAGES</h3>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;font-family:'VT323',monospace;font-size:17px;color:#fff">
+            <span style="border:1px solid #555;padding:4px 10px">English — 2nd LANGUAGE</span>
+            <span style="border:1px solid #555;padding:4px 10px">Korean — NATIVE</span>
+        
+            <span style="border:1px solid #555;padding:4px 10px">C# — STRUGGLING</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="statusbar"><span class="sb">Apply</span><span class="sb">Ready</span><span class="sb">NUM</span></div>
+  </section>
+</div>
+
+<!-- RESUME WINDOW -->
+<div class="section-wrap">
+  <section class="window scroll-reveal" id="resume">
+    <div class="titlebar">
+      <div class="t-left"><span class="t-icon"></span><span>resume.doc — WordPad</span></div>
+      <div class="t-ctrl"><button>_</button><button>□</button><button>X</button></div>
+    </div>
+    <div class="menubar"><span><u>F</u>ile</span><span><u>E</u>dit</span><span><u>V</u>iew</span><span><u>I</u>nsert</span><span>F<u>o</u>rmat</span></div>
+    <div class="win-body">
+      <div class="sec-head">
+        <span class="num">04</span>
+        <h2>RESUME.DOC</h2>
+        <span class="addr">C:\DOCS\RESUME_FINAL_v7.DOC</span>
+      </div>
+      <div class="resume-grid">
+        <div class="res-col">
+          <h3>&gt; EDUCATION</h3>
+          <div class="res-item">
+            <div class="top"><span class="role">BFA, Art and Computation</span><span class="when">2024 — 2028</span></div>
+            <div class="place">Rhode Island School of Design</div>
+            <p>Focus: interactive systems, 3D Tools, Adobe Suites. </p>
+          </div>
+          <div class="res-item">
+            <div class="top"><span class="role">St.Johnsbury Academy</span><span class="when">2018-2024</span></div>
+            <div class="place">Middle - Highschool</div>
+            <p>General education</p>
+          </div>
+          <h3 style="margin-top:20px">&gt; RECOGNITION & Awards</h3>
+          <div class="res-item">
+            <div class="top"><span class="role"> Gold Medal, K&P International Painting & Design Competition</span><span class="when">2023</span></div>
+            <div class="place"> "Atlas" </div>
+          </div>
+          <div class="res-item">
+            <div class="place">"Kaleidoscopic"</div>
+          </div>
+        </div>
+        <div class="res-col">
+          <h3>&gt; EXPERIENCE</h3>
+          <div class="res-item">
+            <div class="top"><span class="role">Freelance Designer/Dev</span><span class="when">2024 — NOW</span></div>
+            <div class="place">Self-employed</div>
+            <p>Brand systems, interactive sites, and small labels, and comission works accepted.</p>
+          </div>
+          <h3 style="margin-top:20px">&gt; INTERESTS</h3>
+          <div class="res-item">
+            <p style="color:#fff">Archives · dead-web · zine-making · field recording · vintage software manuals · 3D · Animation & Motion.</p>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:20px;padding:12px;background:rgba(255,255,255,.05);border:1px dashed #555;font-family:'VT323',monospace;font-size:17px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <span>&gt; Want the full PDF?</span>
+        <button class="qbtn" style="background:#fff;color:#000" onclick="alert('resume.pdf requested — check your inbox in ~3 business days of simulated dialup.')">&gt; DOWNLOAD RESUME.PDF [42KB]</button>
+      </div>
+    </div>
+    <div class="statusbar"><span class="sb">Page 1/1</span><span class="sb">Words: 412</span><span class="sb">OVR</span></div>
+  </section>
+</div>
+
+<!-- CONTACT WINDOW -->
+<div class="section-wrap">
+  <section class="window scroll-reveal" id="contact">
+    <div class="titlebar">
+      <div class="t-left"><span class="t-icon"></span><span>contact.bat — Terminal</span></div>
+      <div class="t-ctrl"><button>_</button><button>□</button><button>X</button></div>
+    </div>
+    <div class="menubar"><span><u>F</u>ile</span><span><u>E</u>dit</span><span>Sen<u>d</u></span></div>
+    <div class="win-body">
+      <div class="sec-head">
+        <span class="num">05</span>
+        <h2>CONTACT.BAT</h2>
+        <span class="addr">C:\&gt; PING ME</span>
+      </div>
+      <div class="contact-grid">
+        <div class="terminal">
+          <div class="out">C:\PORTFOLIO&gt; whoami</div>
+          <div class="out" style="color:#fff">user@portfolio :: designer+developer</div>
+          <div class="out">&nbsp;</div>
+          <div class="out">C:\PORTFOLIO&gt; cat /etc/status.txt</div>
+          <div class="out" style="color:#fff">[ OPEN ] :: freelance</div>
+          <div class="out" style="color:#fff">[ OPEN ] :: full-time, summer '26</div>
+          <div class="out" style="color:#888">[ CLOSED ] :: crypto bro DMs</div>
+          <div class="out">&nbsp;</div>
+          <div class="out">C:\PORTFOLIO&gt; send_mail --to=you</div>
+          <div><span class="prompt">&gt;</span> <span class="cmd">hello@your-domain.net</span><span class="cursor"></span></div>
+        </div>
+        <div class="contact-card">
+          <h3>// ESTABLISH CONNECTION</h3>
+          <div class="row"><span class="k">Email</span><span class="v">eneriel0922@gmail.com</span></div>
+          <div class="row"><span class="k">Linkedin</span><span class="v">Rin Lee</span></div>
+          <div class="row"><span class="k">GitHub</span><span class="v">@rlee100922</span></div>
+          <div class="row"><span class="k">Instagram</span><span class="v">@lancxlot_</span></div>
+          <div class="row"><span class="k">Location</span><span class="v">Providence, RI & Seoul, KR</span></div>
+          <div class="cta">
+            <button onclick="location.href='mailto:hello@domain.net'">&gt; EMAIL</button>
+            <button class="alt" onclick="openPopup()">&gt; HIRE ME</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="statusbar"><span class="sb">Connected</span><span class="sb">56.6 kbps</span><span class="sb">EST</span></div>
+  </section>
+</div>
+
+<!-- VISITOR / WEBRING -->
+<div class="visitor">
+  <span>&gt; VISITOR #</span>
+  <span class="counter" id="counter"><b>0</b><b>0</b><b>0</b><b>4</b><b>2</b><b>0</b></span>
+  <span>· SINCE 02.2026 ·</span>
+  <span class="web-ring">
+    <a href="#">← PREV</a>
+    <a href="#">RANDOM</a>
+    <a href="#">NEXT →</a>
+  </span>
+  <span>· BEST VIEWED IN PC-WEB 4+</span>
+</div>
+
+<footer>
+  <div class="sig">// END_OF_TRANSMISSION ◆</div>
+  <div>© 2026 — hand&vibe-coded with VS-code &amp; . No frameworks were harmed.</div>
+  <div style="margin-top:6px;color:#888">This site is dedicated to every .gif that ever expired.</div>
+</footer>
+
+<!-- DRAGGABLE ERROR POPUP -->
+<div class="popup" id="popup" style="top:140px;right:30px;display:none">
+  <div class="tb" id="popup-tb">
+    <span>Message.exe</span>
+    <button onclick="closePopup()">X</button>
+  </div>
+  <div class="bd">
+    <div class="ic">!</div>
+    <div>
+      <b style="font-size:17px">Thanks for stopping by.</b><br>
+      This portfolio has detected curiosity. Proceed to contact window and say hi?
+    </div>
+  </div>
+  <div class="btns">
+    <button onclick="scrollTo2('#contact');closePopup()">OK</button>
+    <button onclick="closePopup()">Cancel</button>
+  </div>
+</div>
+
+<!-- SCROLL TO TOP FAB -->
+<button class="fab" id="fab" onclick="scrollTo2('#home')" title="back to top">▲</button>
+
+<!-- TASKBAR -->
+<div class="taskbar">
+  <button class="start-btn" onclick="scrollTo2('#home')"><span class="logo"></span>Start</button>
+  <button class="task-item active" onclick="scrollTo2('#home')">◆ portfolio.exe</button>
+  <button class="task-item" onclick="scrollTo2('#projects')">▤ projects\</button>
+  <button class="task-item" onclick="scrollTo2('#resume')">▤ resume.doc</button>
+  <button class="task-item" onclick="openPopup()">! Message.exe</button>
+  <div class="tray">
+    <span class="sysicon">♪</span>
+    <span class="sysicon">◎</span>
+    <span class="sysicon">⌨</span>
+    <span class="clock" id="clock">12:00 AM</span>
+  </div>
+</div>
+
+<script>
+  /* ---- CIRCULAR CURSOR ---- */
+  (function(){
+    const svg = `<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="8" cy="8" r="7" fill="none" stroke="#000" stroke-width="1.5"/>
+    </svg>`;
+    const el = document.createElement('div');
+    el.id = 'px-cursor';
+    el.innerHTML = svg;
+    document.body.appendChild(el);
+    let cx = -100, cy = -100;
+    
+    document.addEventListener('mousemove', e => {
+      cx = e.clientX; cy = e.clientY;
+      el.style.transform = `translate(${cx}px,${cy}px)`;
+      
+      // Check if over a button
+      const target = document.elementFromPoint(cx, cy);
+      const circle = el.querySelector('circle');
+      if(circle){
+        if(target && (target.tagName === 'BUTTON' || target.closest('button') || target.tagName === 'A' || target.closest('a'))){
+          circle.setAttribute('stroke', '#fff');
+        } else {
+          circle.setAttribute('stroke', '#000');
+        }
+      }
+    });
+    
+    document.addEventListener('mouseleave', () => { el.style.opacity='0'; });
+    document.addEventListener('mouseenter', () => { el.style.opacity='1'; });
+  })();
+
+  /* ---- SELFIE HOVER EFFECT ---- */
+  (function(){
+    const avatar = document.querySelector('.pxavatar');
+    const aboutWindow = document.querySelector('#about');
+    if(avatar && aboutWindow){
+      aboutWindow.addEventListener('mouseenter', () => {
+        avatar.classList.add('hover-selfie');
+      });
+      aboutWindow.addEventListener('mouseleave', () => {
+        avatar.classList.remove('hover-selfie');
+      });
+    }
+  })();
+
+  /* ---- PIXELATED HERO BACKGROUND ---- */
+  (function(){
+    const img = new Image();
+    img.onload = function(){
+      const SCALE = 1; // 0.5% resolution
+      const w = Math.max(1, Math.round(img.naturalWidth  * SCALE));
+      const h = Math.max(1, Math.round(img.naturalHeight * SCALE));
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(img, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL('image/png');
+      const bg = document.getElementById('hero-bg');
+      if(bg){
+  
+        bg.style.imageRendering = 'pixelated';
+      }
+    };
+    img.onerror = function(){
+      // graceful fallback: subtle checkerboard pattern
+      const bg = document.getElementById('hero-bg');
+      if(bg) bg.style.background =
+        'repeating-conic-gradient(#eee 0deg 90deg, #fff 90deg 180deg) 0 0/32px 32px';
+    };
+    img.src = 'images/home_image.jpg';
+  })();
+
+  /* ---- SCROLL REVEAL + LIQUID FADE ---- */
+  (function(){
+    const reveals = document.querySelectorAll('.scroll-reveal');
+    const opts = { threshold: 0.08 };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const el = entry.target;
+        if(entry.isIntersecting){
+          el.classList.remove('exiting');
+          el.classList.add('visible');
+        } else {
+          const rect = el.getBoundingClientRect();
+          el.classList.remove('visible');
+          if(rect.top < 0) el.classList.add('exiting');
+          else el.classList.remove('exiting');
+        }
+      });
+    }, opts);
+    reveals.forEach(el => observer.observe(el));
+  })();
+
+  /* ---- UTILITY ---- */
+  function scrollTo2(sel){
+    const el = document.querySelector(sel);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  function rotateHeroImage(){
+    const images = ['home_image1.jpg', 'home_image2.jpg', 'home_image3.jpg'];
+    const randomIndex = Math.floor(Math.random() * images.length);
+    const bg = document.getElementById('hero-bg');
+    if(bg){
+      bg.src = 'images/' + images[randomIndex];
+    }
+  }
+
+  function tickClock(){
+    const d = new Date();
+    let h = d.getHours(), m = d.getMinutes();
+    const ap = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    const str = String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+' '+ap;
+    const c1 = document.getElementById('clock');
+    const c2 = document.getElementById('cat-clock');
+    if(c1) c1.textContent = str;
+    if(c2) c2.textContent = str;
+  }
+  tickClock(); setInterval(tickClock, 15000);
+
+  const fab = document.getElementById('fab');
+  window.addEventListener('scroll', ()=>{
+    if(window.scrollY > 500) fab.classList.add('show');
+    else fab.classList.remove('show');
+  });
+
+  function openPopup(){ document.getElementById('popup').style.display='block'; }
+  function closePopup(){ document.getElementById('popup').style.display='none'; }
+  setTimeout(()=>{ if(!sessionStorage.getItem('seenPop')){ openPopup(); sessionStorage.setItem('seenPop','1'); } }, 4500);
+
+  (function(){
+    const pop = document.getElementById('popup');
+    const tb  = document.getElementById('popup-tb');
+    let sx=0,sy=0,ox=0,oy=0,drag=false;
+    tb.addEventListener('mousedown', e=>{
+      drag=true; sx=e.clientX; sy=e.clientY;
+      const r=pop.getBoundingClientRect();
+      ox=r.left; oy=r.top;
+      pop.style.right='auto'; pop.style.left=ox+'px'; pop.style.top=oy+'px';
+      e.preventDefault();
+    });
+    document.addEventListener('mousemove', e=>{ if(!drag) return; pop.style.left=(ox+e.clientX-sx)+'px'; pop.style.top=(oy+e.clientY-sy)+'px'; });
+    document.addEventListener('mouseup', ()=>drag=false);
+  })();
+
+  (function(){
+    let n = parseInt(localStorage.getItem('visits')||'420',10);
+    n += 1;
+    localStorage.setItem('visits', n);
+    const str = String(n).padStart(6,'0');
+    const el = document.getElementById('counter');
+    el.innerHTML = str.split('').map(d=>`<b>${d}</b>`).join('');
+  })();
+
+  setTimeout(()=>{ const b=document.getElementById('boot'); if(b) b.remove(); }, 3500);
+
+  document.addEventListener('keydown', e=>{
+    if(e.key==='h'||e.key==='H') scrollTo2('#home');
+  });
+  if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+
+window.addEventListener('load', () => {
+  window.scrollTo(0, 0);
+  rotateHeroImage();
+});
+
+setTimeout(() => {
+  window.scrollTo(0, 0);
+}, 50);
+</script>
+</body>
+</html>
